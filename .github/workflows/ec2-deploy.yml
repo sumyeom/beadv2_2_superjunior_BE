@@ -100,22 +100,6 @@ jobs:
             nohup env \
               SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
               JWT_SECRET="$JWT_SECRET" \
-              REDIS_HOST="$REDIS_HOST" \
-              REDIS_PORT="$REDIS_PORT" \
-              SPRING_KAFKA_BOOTSTRAP_SERVERS="$SPRING_KAFKA_BOOTSTRAP_SERVERS" \
-              SPRING_R2DBC_URL="$SPRING_R2DBC_URL" \
-              SPRING_DATASOURCE_USERNAME="$SPRING_DATASOURCE_USERNAME" \
-              SPRING_DATASOURCE_PASSWORD="$SPRING_DATASOURCE_PASSWORD" \
-              MEMBER_SERVICE_URL="$MEMBER_SERVICE_URL" \
-              COMMERCE_SERVICE_URL="$COMMERCE_SERVICE_URL" \
-              POINT_SERVICE_URL="$POINT_SERVICE_URL" \
-              SEARCH_SERVICE_URL="$SEARCH_SERVICE_URL" \
-              RECOMMENDATION_SERVICE_URL="$RECOMMENDATION_SERVICE_URL" \
-              java -jar jars/gateway.jar > logs/gateway.log 2>&1 &
-
-            nohup env \
-              SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
-              JWT_SECRET="$JWT_SECRET" \
               JWT_ACCESS_TOKEN_VALIDITY_PERIOD="$JWT_ACCESS_TOKEN_VALIDITY_PERIOD" \
               JWT_REFRESH_TOKEN_VALIDITY_PERIOD="$JWT_REFRESH_TOKEN_VALIDITY_PERIOD" \
               SPRING_KAFKA_BOOTSTRAP_SERVERS="$SPRING_KAFKA_BOOTSTRAP_SERVERS" \
@@ -164,6 +148,30 @@ jobs:
               CLIENT_COMMERCE="$CLIENT_COMMERCE" \
               java -jar jars/elastic-search.jar > logs/elastic-search.log 2>&1 &
 
-            sleep 20
+            nohup env \
+              SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
+              JWT_SECRET="$JWT_SECRET" \
+              REDIS_HOST="$REDIS_HOST" \
+              REDIS_PORT="$REDIS_PORT" \
+              SPRING_KAFKA_BOOTSTRAP_SERVERS="$SPRING_KAFKA_BOOTSTRAP_SERVERS" \
+              SPRING_R2DBC_URL="$SPRING_R2DBC_URL" \
+              SPRING_DATASOURCE_USERNAME="$SPRING_DATASOURCE_USERNAME" \
+              SPRING_DATASOURCE_PASSWORD="$SPRING_DATASOURCE_PASSWORD" \
+              MEMBER_SERVICE_URL="$MEMBER_SERVICE_URL" \
+              COMMERCE_SERVICE_URL="$COMMERCE_SERVICE_URL" \
+              POINT_SERVICE_URL="$POINT_SERVICE_URL" \
+              SEARCH_SERVICE_URL="$SEARCH_SERVICE_URL" \
+              RECOMMENDATION_SERVICE_URL="$RECOMMENDATION_SERVICE_URL" \
+              java -jar jars/gateway.jar > logs/gateway.log 2>&1 &
 
-            curl -fsS http://127.0.0.1:8000/actuator/health
+            for i in $(seq 1 18); do
+              if curl -fsS http://127.0.0.1:8000/actuator/health >/dev/null 2>&1; then
+                curl -fsS http://127.0.0.1:8000/actuator/health
+                exit 0
+              fi
+              sleep 5
+            done
+
+            echo "Gateway health check failed"
+            tail -n 100 logs/gateway.log || true
+            exit 1
