@@ -88,11 +88,72 @@ jobs:
             . ./.env
             set +a
 
-            nohup java -jar jars/gateway.jar > logs/gateway.log 2>&1 &
-            nohup java -jar jars/member.jar > logs/member.log 2>&1 &
-            nohup java -jar jars/commerce.jar > logs/commerce.log 2>&1 &
-            nohup java -jar jars/point.jar > logs/point.log 2>&1 &
-            nohup java -jar jars/elastic-search.jar > logs/elastic-search.log 2>&1 &
+            nohup env \
+              SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
+              JWT_SECRET="$JWT_SECRET" \
+              REDIS_HOST="$REDIS_HOST" \
+              REDIS_PORT="$REDIS_PORT" \
+              SPRING_KAFKA_BOOTSTRAP_SERVERS="$SPRING_KAFKA_BOOTSTRAP_SERVERS" \
+              SPRING_R2DBC_URL="$SPRING_R2DBC_URL" \
+              SPRING_DATASOURCE_USERNAME="$SPRING_DATASOURCE_USERNAME" \
+              SPRING_DATASOURCE_PASSWORD="$SPRING_DATASOURCE_PASSWORD" \
+              MEMBER_SERVICE_URL="$MEMBER_SERVICE_URL" \
+              COMMERCE_SERVICE_URL="$COMMERCE_SERVICE_URL" \
+              POINT_SERVICE_URL="$POINT_SERVICE_URL" \
+              SEARCH_SERVICE_URL="$SEARCH_SERVICE_URL" \
+              RECOMMENDATION_SERVICE_URL="$RECOMMENDATION_SERVICE_URL" \
+              java -jar jars/gateway.jar > logs/gateway.log 2>&1 &
+
+            nohup env \
+              SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
+              JWT_SECRET="$JWT_SECRET" \
+              JWT_ACCESS_TOKEN_VALIDITY_PERIOD="$JWT_ACCESS_TOKEN_VALIDITY_PERIOD" \
+              JWT_REFRESH_TOKEN_VALIDITY_PERIOD="$JWT_REFRESH_TOKEN_VALIDITY_PERIOD" \
+              SPRING_KAFKA_BOOTSTRAP_SERVERS="$SPRING_KAFKA_BOOTSTRAP_SERVERS" \
+              REDIS_HOST="$REDIS_HOST" \
+              REDIS_PORT="$REDIS_PORT" \
+              SPRING_DATASOURCE_URL="$MEMBER_DATABASE_URL" \
+              SPRING_DATASOURCE_USERNAME="$MEMBER_POSTGRES_USERNAME" \
+              SPRING_DATASOURCE_PASSWORD="$MEMBER_POSTGRES_PASSWORD" \
+              COMMERCE_SERVICE_URL="$COMMERCE_SERVICE_URL" \
+              POINT_SERVICE_URL="$POINT_SERVICE_URL" \
+              MEMBER_SMTP_EMAIL="$MEMBER_SMTP_EMAIL" \
+              MEMBER_SMTP_PASSWORD="$MEMBER_SMTP_PASSWORD" \
+              java -jar jars/member.jar > logs/member.log 2>&1 &
+
+            nohup env \
+              SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
+              PRODUCT_DATABASE_P6SPY_URL="$PRODUCT_DATABASE_P6SPY_URL" \
+              PRODUCT_DATABASE_USERNAME="$PRODUCT_DATABASE_USERNAME" \
+              PRODUCT_DATABASE_PASSWORD="$PRODUCT_DATABASE_PASSWORD" \
+              REDIS_HOST="$REDIS_HOST" \
+              REDIS_PORT="$REDIS_PORT" \
+              SPRING_KAFKA_BOOTSTRAP_SERVERS="$SPRING_KAFKA_BOOTSTRAP_SERVERS" \
+              CLIENT_MEMBER="$CLIENT_MEMBER" \
+              AWS_ACCESS_KEY="$AWS_ACCESS_KEY" \
+              AWS_SECRET_KEY="$AWS_SECRET_KEY" \
+              AWS_REGION="$AWS_REGION" \
+              S3_BUCKET_NAME="$S3_BUCKET_NAME" \
+              java -jar jars/commerce.jar > logs/commerce.log 2>&1 &
+
+            nohup env \
+              SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
+              SPRING_DATASOURCE_URL="$SPRING_DATASOURCE_URL" \
+              SPRING_DATASOURCE_USERNAME="$SPRING_DATASOURCE_USERNAME" \
+              SPRING_DATASOURCE_PASSWORD="$SPRING_DATASOURCE_PASSWORD" \
+              SPRING_KAFKA_BOOTSTRAP_SERVERS="$SPRING_KAFKA_BOOTSTRAP_SERVERS" \
+              CLIENT_COMMERCE="$CLIENT_COMMERCE" \
+              TOSS_SECRET_KEY="$TOSS_SECRET_KEY" \
+              java -jar jars/point.jar > logs/point.log 2>&1 &
+
+            nohup env \
+              SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
+              SPRING_KAFKA_BOOTSTRAP_SERVERS="$SPRING_KAFKA_BOOTSTRAP_SERVERS" \
+              SPRING_ELASTICSEARCH_URIS="$SPRING_ELASTICSEARCH_URIS" \
+              TOKEN_INTERNAL_SECRET="$TOKEN_INTERNAL_SECRET" \
+              CLIENT_RECOMMENDATION="$CLIENT_RECOMMENDATION" \
+              CLIENT_COMMERCE="$CLIENT_COMMERCE" \
+              java -jar jars/elastic-search.jar > logs/elastic-search.log 2>&1 &
 
             sleep 20
 
