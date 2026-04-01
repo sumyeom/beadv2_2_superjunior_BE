@@ -31,6 +31,7 @@ jobs:
             :commerce:bootJar \
             :point:bootJar \
             :elastic-search:bootJar \
+            :batch:bootJar \
             -x test
 
       - name: Prepare deployment bundle
@@ -44,6 +45,7 @@ jobs:
           cp commerce/build/libs/*.jar deploy/jars/commerce.jar
           cp point/build/libs/*.jar deploy/jars/point.jar
           cp elastic-search/build/libs/*.jar deploy/jars/elastic-search.jar
+          cp batch/build/libs/*.jar deploy/jars/batch.jar
 
       - name: Copy files to EC2
         uses: appleboy/scp-action@v0.1.7
