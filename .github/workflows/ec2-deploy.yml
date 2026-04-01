@@ -37,6 +37,8 @@ jobs:
         run: |
           mkdir -p deploy/jars
           cp docker-compose.yml deploy/
+          cp Dockerfile deploy/
+          cp -R docker deploy/
           cp gateway/build/libs/*.jar deploy/jars/gateway.jar
           cp member/build/libs/*.jar deploy/jars/member.jar
           cp commerce/build/libs/*.jar deploy/jars/commerce.jar
