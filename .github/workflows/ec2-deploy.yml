@@ -79,9 +79,11 @@ jobs:
             printf '%s\n' "$APP_ENV" > .env
 
             if docker compose version >/dev/null 2>&1; then
-              docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+              docker compose -f docker-compose.yml up -d
+              docker compose -p beadv2-monitoring -f docker-compose.monitoring.yml up -d
             else
-              docker-compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+              docker-compose -f docker-compose.yml up -d
+              docker-compose -p beadv2-monitoring -f docker-compose.monitoring.yml up -d
             fi
 
             stop_jar() {
