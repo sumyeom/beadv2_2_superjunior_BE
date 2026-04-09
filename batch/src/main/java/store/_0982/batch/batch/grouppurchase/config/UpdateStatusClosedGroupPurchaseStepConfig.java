@@ -12,6 +12,9 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
 import store._0982.batch.batch.grouppurchase.dto.GroupPurchaseProjection;
 import store._0982.batch.batch.grouppurchase.dto.GroupPurchaseResultProjection;
+import store._0982.batch.batch.grouppurchase.listener.GroupPurchaseReaderListener;
+import store._0982.batch.batch.grouppurchase.listener.GroupPurchaseWriterListener;
+import store._0982.batch.batch.grouppurchase.listener.UpdateStatusClosedGroupPurchaseStepListener;
 import store._0982.batch.batch.grouppurchase.policy.GroupPurchasePolicy;
 import store._0982.batch.batch.grouppurchase.processor.UpdateStatusClosedGroupPurchaseProcessor;
 import store._0982.batch.batch.grouppurchase.writer.UpdateStatusClosedGroupPurchaseWriter;
@@ -26,6 +29,10 @@ public class UpdateStatusClosedGroupPurchaseStepConfig {
     private final UpdateStatusClosedGroupPurchaseProcessor updateStatusClosedGroupPurchaseProcessor;
     private final UpdateStatusClosedGroupPurchaseWriter updateStatusClosedGroupPurchaseWriter;
 
+    private final UpdateStatusClosedGroupPurchaseStepListener updateStatusClosedGroupPurchaseStepListener;
+    private final GroupPurchaseReaderListener groupPurchaseReaderListener;
+    private final GroupPurchaseWriterListener groupPurchaseWriterListener;
+
     @Bean
     public Step updateStatusClosedGroupPurchaseStep(
             @Qualifier("updateStatusClosedGroupPurchase") JpaCursorItemReader<GroupPurchaseProjection> updateStatusClosedGroupPurchaseReader
@@ -33,11 +40,11 @@ public class UpdateStatusClosedGroupPurchaseStepConfig {
         return new StepBuilder("updateStatusClosedGroupPurchaseStep", jobRepository)
                 .<GroupPurchaseProjection, GroupPurchaseResultProjection>chunk(GroupPurchasePolicy.GroupPurchase.CHUNK_UNIT, transactionManager)
                 .reader(updateStatusClosedGroupPurchaseReader)
+                .listener(groupPurchaseReaderListener)
                 .processor(updateStatusClosedGroupPurchaseProcessor)
                 .writer(updateStatusClosedGroupPurchaseWriter)
-                .faultTolerant()
-                .retryLimit(3)
-                .retry(OptimisticLockingFailureException.class)
+                .listener(groupPurchaseWriterListener)
+                .listener(updateStatusClosedGroupPurchaseStepListener)
                 .build();
     }
 }

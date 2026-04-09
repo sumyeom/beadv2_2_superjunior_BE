@@ -54,4 +54,26 @@ public interface GroupPurchaseJpaRepository extends JpaRepository<GroupPurchase,
     int bulkUpdateStatusWithSucceededAt(@Param("ids") List<UUID> ids,
                          @Param("status") GroupPurchaseStatus status,
                          @Param("now") OffsetDateTime now);
+
+    @Query("""
+        SELECT count(g)
+        from GroupPurchase g
+        where g.status = :status
+            and g.startDate <= :now
+    """)
+    long countByStatusAndStartDateLessThanEqual(
+            @Param("status") GroupPurchaseStatus status,
+            @Param("now") OffsetDateTime now
+    );
+
+    @Query("""
+        SELECT count(g)
+        from GroupPurchase g
+        where g.status = :status
+            and g.endDate <= :now
+    """)
+    long countByStatusAndEndDateLessThanEqual(
+            @Param("status") GroupPurchaseStatus status,
+            @Param("now") OffsetDateTime now
+    );
 }

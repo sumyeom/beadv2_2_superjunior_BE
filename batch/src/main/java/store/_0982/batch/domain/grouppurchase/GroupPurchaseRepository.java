@@ -3,6 +3,7 @@ package store._0982.batch.domain.grouppurchase;
 import store._0982.common.domain.grouppurchase.GroupPurchase;
 import store._0982.common.domain.grouppurchase.GroupPurchaseStatus;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,5 +15,8 @@ public interface GroupPurchaseRepository {
     int bulkUpdateStatus(List<UUID> ids, GroupPurchaseStatus status);
 
     int bulkUpdateStatusWithSucceededAt(List<UUID> ids, GroupPurchaseStatus status);
-}
 
+    long countByStatusAndStartDateLessThanEqual(GroupPurchaseStatus status, OffsetDateTime now);
+
+    long countByStatusAndEndDateLessThanEqual(GroupPurchaseStatus status, OffsetDateTime now);
+}
