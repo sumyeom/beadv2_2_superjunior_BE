@@ -20,4 +20,4 @@ cookie:
 
 app:
   oauth2:
-    frontend-redirect-url: https://0982.vercel.app
+    frontend-redirect-url: ${APP_OAUTH2_FRONTEND_REDIRECT_URL:https://0982-project-fe.vercel.app}

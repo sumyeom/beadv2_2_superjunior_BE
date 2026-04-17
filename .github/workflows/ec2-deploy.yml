@@ -106,7 +106,9 @@ jobs:
             . ./.env
             set +a
 
-            nohup env \
+            nohup env -i \
+              PATH="$PATH" \
+              HOME="$HOME" \
               SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
               JWT_SECRET="$JWT_SECRET" \
               JWT_ACCESS_TOKEN_VALIDITY_PERIOD="$JWT_ACCESS_TOKEN_VALIDITY_PERIOD" \
@@ -121,9 +123,12 @@ jobs:
               POINT_SERVICE_URL="$POINT_SERVICE_URL" \
               MEMBER_SMTP_EMAIL="$MEMBER_SMTP_EMAIL" \
               MEMBER_SMTP_PASSWORD="$MEMBER_SMTP_PASSWORD" \
+              APP_OAUTH2_FRONTEND_REDIRECT_URL="${APP_OAUTH2_FRONTEND_REDIRECT_URL:-https://0982-project-fe.vercel.app}" \
               java -jar jars/member.jar > logs/member.log 2>&1 &
 
-            nohup env \
+            nohup env -i \
+              PATH="$PATH" \
+              HOME="$HOME" \
               SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
               PRODUCT_DATABASE_P6SPY_URL="$PRODUCT_DATABASE_P6SPY_URL" \
               PRODUCT_DATABASE_USERNAME="$PRODUCT_DATABASE_USERNAME" \
@@ -138,7 +143,9 @@ jobs:
               S3_BUCKET_NAME="$S3_BUCKET_NAME" \
               java -jar jars/commerce.jar > logs/commerce.log 2>&1 &
 
-            nohup env \
+            nohup env -i \
+              PATH="$PATH" \
+              HOME="$HOME" \
               SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
               SPRING_DATASOURCE_URL="$SPRING_DATASOURCE_URL" \
               SPRING_DATASOURCE_USERNAME="$SPRING_DATASOURCE_USERNAME" \
@@ -148,7 +155,9 @@ jobs:
               TOSS_SECRET_KEY="$TOSS_SECRET_KEY" \
               java -jar jars/point.jar > logs/point.log 2>&1 &
 
-            nohup env \
+            nohup env -i \
+              PATH="$PATH" \
+              HOME="$HOME" \
               SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
               SPRING_KAFKA_BOOTSTRAP_SERVERS="$SPRING_KAFKA_BOOTSTRAP_SERVERS" \
               SPRING_ELASTICSEARCH_URIS="$SPRING_ELASTICSEARCH_URIS" \
@@ -157,7 +166,9 @@ jobs:
               CLIENT_COMMERCE="$CLIENT_COMMERCE" \
               java -jar jars/elastic-search.jar > logs/elastic-search.log 2>&1 &
 
-            nohup env \
+            nohup env -i \
+              PATH="$PATH" \
+              HOME="$HOME" \
               SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
               RECOMMENDATION_DATABASE_URL="$RECOMMENDATION_DATABASE_URL" \
               RECOMMENDATION_DATABASE_USERNAME="$RECOMMENDATION_DATABASE_USERNAME" \
@@ -169,7 +180,9 @@ jobs:
               OPENAI_EMBEDDING_MODEL="$OPENAI_EMBEDDING_MODEL" \
               java -jar jars/recommendation.jar > logs/recommendation.log 2>&1 &
 
-            nohup env \
+            nohup env -i \
+              PATH="$PATH" \
+              HOME="$HOME" \
               SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE" \
               JWT_SECRET="$JWT_SECRET" \
               REDIS_HOST="$REDIS_HOST" \
@@ -183,6 +196,7 @@ jobs:
               POINT_SERVICE_URL="$POINT_SERVICE_URL" \
               SEARCH_SERVICE_URL="$SEARCH_SERVICE_URL" \
               RECOMMENDATION_SERVICE_URL="$RECOMMENDATION_SERVICE_URL" \
+              FRONTEND_URL="${FRONTEND_URL:-https://0982-project-fe.vercel.app}" \
               java -jar jars/gateway.jar > logs/gateway.log 2>&1 &
 
             for i in $(seq 1 18); do
