@@ -21,6 +21,7 @@ services:
     restart: unless-stopped
     depends_on:
       - prometheus
+      - loki
     ports:
       - "3000:3000"
     environment:
@@ -31,6 +32,31 @@ services:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
 
+  loki:
+    image: grafana/loki:3.3.2
+    container_name: beadv2-loki
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3100:3100"
+    command:
+      - "-config.file=/etc/loki/config.yml"
+    volumes:
+      - ./monitoring/loki-config.yml:/etc/loki/config.yml:ro
+      - loki_data:/loki
+
+  promtail:
+    image: grafana/promtail:3.3.2
+    container_name: beadv2-promtail
+    restart: unless-stopped
+    depends_on:
+      - loki
+    command:
+      - "-config.file=/etc/promtail/config.yml"
+    volumes:
+      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml:ro
+      - ./logs:/var/log/beadv2:ro
+
 volumes:
   prometheus_data:
   grafana_data:
+  loki_data:
