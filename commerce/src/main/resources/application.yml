@@ -82,6 +82,7 @@ logging:
 
 outbox:
   publisher:
+    enabled: true
     fixed-delay-ms: 1000
     batch-size: 100
     send-timeout-ms: 5000
@@ -89,4 +90,3 @@ outbox:
     retry-base-delay-ms: 2000
     retry-max-delay-ms: 60000
     max-retries: 10
-

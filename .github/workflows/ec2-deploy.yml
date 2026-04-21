@@ -83,6 +83,7 @@ jobs:
               docker compose -p beadv2-monitoring -f docker-compose.monitoring.yml up -d
             else
               docker-compose -f docker-compose.yml up -d
+              docker rm -f beadv2-grafana beadv2-prometheus beadv2-loki beadv2-promtail >/dev/null 2>&1 || true
               docker-compose -p beadv2-monitoring -f docker-compose.monitoring.yml up -d
             fi
 
