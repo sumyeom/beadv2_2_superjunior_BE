@@ -79,6 +79,24 @@ jobs:
 
             printf '%s\n' "$APP_ENV" > .env
 
+            echo "Disk usage before cleanup"
+            df -h
+            docker system df || true
+
+            # Remove stale build cache and dangling artifacts before infra startup.
+            docker builder prune -af >/dev/null 2>&1 || true
+            docker image prune -af --filter "until=168h" >/dev/null 2>&1 || true
+            docker container prune -f >/dev/null 2>&1 || true
+
+            echo "Disk usage after cleanup"
+            df -h
+            docker system df || true
+
+            if ! docker image inspect elasticsearch-nori:8.18.8 >/dev/null 2>&1; then
+              echo "Building elasticsearch-nori image..."
+              docker build -t elasticsearch-nori:8.18.8 -f Dockerfile .
+            fi
+
             if docker compose version >/dev/null 2>&1; then
               docker compose -f docker-compose.yml up -d
               docker compose -p beadv2-monitoring -f docker-compose.monitoring.yml up -d
