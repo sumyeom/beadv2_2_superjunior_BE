@@ -60,6 +60,7 @@ jobs:
           source: "deploy/*"
           target: "~/beadv2-deploy"
           strip_components: 1
+          debug: true
 
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v1.2.0
