@@ -37,6 +37,7 @@ jobs:
 
       - name: Prepare deployment bundle
         run: |
+          rm -rf deploy deploy.tar.gz
           mkdir -p deploy/jars
           cp docker-compose.yml deploy/
           cp docker-compose.monitoring.yml deploy/
@@ -51,15 +52,28 @@ jobs:
           cp recommendation/build/libs/*.jar deploy/jars/recommendation.jar
           cp batch/build/libs/*.jar deploy/jars/batch.jar
 
-      - name: Copy files to EC2
+      - name: Inspect deployment bundle
+        run: |
+          echo "Bundle size"
+          du -sh deploy
+          echo "JAR sizes"
+          ls -lh deploy/jars
+          echo "Largest bundle files"
+          find deploy -type f -exec du -h {} + | sort -h | tail -n 30
+
+      - name: Pack deployment bundle
+        run: |
+          tar -zcf deploy.tar.gz -C deploy .
+          ls -lh deploy.tar.gz
+
+      - name: Copy bundle to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "deploy/*"
+          source: "deploy.tar.gz"
           target: "~/beadv2-deploy"
-          strip_components: 1
           debug: true
 
       - name: Deploy on EC2
@@ -76,6 +90,9 @@ jobs:
 
             mkdir -p ~/beadv2-deploy/logs
             cd ~/beadv2-deploy
+
+            tar -zxf deploy.tar.gz
+            rm -f deploy.tar.gz
 
             printf '%s\n' "$APP_ENV" > .env
 
