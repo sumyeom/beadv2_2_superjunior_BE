@@ -13,8 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EntityScan(basePackages = {
         "store._0982.commerce.domain",
-        "store._0982.common.domain",
-        "store._0982.commerce.infrastructure.outbox"
+        "store._0982.common.domain"
 })
 public class CommerceApplication {
 

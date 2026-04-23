@@ -2,41 +2,39 @@ package store._0982.commerce.application.grouppurchase;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import store._0982.commerce.exception.CustomErrorCode;
+import org.springframework.transaction.annotation.Transactional;
+import store._0982.commerce.domain.product.ProductRepository;
 import store._0982.common.domain.grouppurchase.GroupPurchase;
 import store._0982.common.domain.product.Product;
-import store._0982.common.exception.CustomException;
 import store._0982.common.log.ServiceLog;
-
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class ParticipateService {
 
-    private final GroupPurchaseCounterService groupPurchaseCounterService;
+    private final ProductRepository productRepository;
+    private final GroupPurchaseQuantityService groupPurchaseQuantityService;
     private final TxParticipateService txParticipateService;
 
+    private final ApplicationEventPublisher eventPublisher;
 
     @ServiceLog
+    @Transactional
     public void participate(GroupPurchase groupPurchase, Product product, int quantity) {
-        int currentCount = groupPurchaseCounterService.reserve(groupPurchase, quantity);
 
-        if (currentCount < 0) {
-            throw new CustomException(CustomErrorCode.GROUP_PURCHASE_IS_REACHED);
-        }
+        // 공동 구매 조회
+        GroupPurchase increased = groupPurchaseQuantityService.increaseQuantity(groupPurchase.getGroupPurchaseId(), quantity);
+
+        int currentCount = increased.getCurrentQuantity();
 
         try{
             txParticipateService.afterReserve(groupPurchase, product, currentCount);
         } catch(RuntimeException e){
-            groupPurchaseCounterService.rollback(groupPurchase.getGroupPurchaseId(), quantity);
+            groupPurchaseQuantityService.decreaseQuantity(groupPurchase.getGroupPurchaseId(), quantity);
             throw e;
         }
-    }
-
-    public void rollback(UUID groupPurchaseId, int quantity){
-        groupPurchaseCounterService.rollback(groupPurchaseId, quantity);
     }
 }

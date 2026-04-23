@@ -5,7 +5,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import store._0982.commerce.application.order.event.OrderCreateProcessedEvent;
 import store._0982.commerce.infrastructure.messaging.kafka.OrderCreatedEventMapper;
-import store._0982.commerce.infrastructure.outbox.OutboxEventService;
 import store._0982.common.kafka.KafkaTopics;
 import store._0982.common.kafka.dto.OrderCreatedEvent;
 
@@ -15,7 +14,6 @@ public class OrderCreatedKafkaEventPublisher {
 
     private final KafkaTemplate<String, OrderCreatedEvent> orderCreatedEventKafkaTemplate;
     private final OrderCreatedEventMapper orderCreatedEventMapper;
-    private final OutboxEventService outboxEventService;
 
     public void publish(OrderCreateProcessedEvent event){
         OrderCreatedEvent kafkaEvent = orderCreatedEventMapper.toMessage(
@@ -23,17 +21,10 @@ public class OrderCreatedKafkaEventPublisher {
                 event.productName()
         );
 
-//        orderCreatedEventKafkaTemplate.send(
-//                KafkaTopics.ORDER_CREATED,
-//                kafkaEvent.getEventId().toString(),
-//                kafkaEvent
-//        );
-        outboxEventService.record(
+        orderCreatedEventKafkaTemplate.send(
                 KafkaTopics.ORDER_CREATED,
                 kafkaEvent.getEventId().toString(),
-                kafkaEvent,
-                "Order",
-                kafkaEvent.getId().toString()
+                kafkaEvent
         );
     }
 }

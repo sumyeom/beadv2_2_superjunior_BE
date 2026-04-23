@@ -1,26 +1,26 @@
 package store._0982.commerce.infrastructure.kafka.publisher;
 
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import store._0982.commerce.application.product.event.ProductUpsertedEvent;
-import store._0982.commerce.infrastructure.outbox.OutboxEventService;
 import store._0982.common.kafka.KafkaTopics;
 
 @Component
 @RequiredArgsConstructor
 public class ProductKafkaEventPublisher {
 
-    private final OutboxEventService outboxEventService;
+    private final KafkaTemplate<String, store._0982.common.kafka.dto.ProductUpsertedEvent> kafkaTemplate;
 
     public void pulbish(ProductUpsertedEvent event) {
         store._0982.common.kafka.dto.ProductUpsertedEvent kafkaEvent = event.product().toEvent(event.product().getCategory());
 
-        outboxEventService.record(
+        kafkaTemplate.send(
                 KafkaTopics.PRODUCT_UPSERTED,
-                kafkaEvent.getEventId().toString(),
-                kafkaEvent,
-                "Product",
-                kafkaEvent.getProductId().toString()
+                kafkaEvent.getProductId().toString(),
+                kafkaEvent
         );
     }
 }
+

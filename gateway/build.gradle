@@ -20,9 +20,6 @@ dependencies {
     // Redis (member 캐시용)
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 
-    // Local cache for gateway route authorization lookup
-    implementation 'com.github.ben-manes.caffeine:caffeine'
-
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'

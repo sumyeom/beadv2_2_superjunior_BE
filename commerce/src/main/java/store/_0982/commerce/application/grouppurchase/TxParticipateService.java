@@ -13,14 +13,12 @@ import store._0982.common.domain.product.Product;
 public class TxParticipateService {
 
     private final ApplicationEventPublisher eventPublisher;
-    private final GroupPurchaseCounterService groupPurchaseCounterService;
+    private final GroupPurchaseQuantityService groupPurchaseQuantityService;
 
     @Transactional
     public void afterReserve(GroupPurchase groupPurchase, Product product, int currentCount) {
         eventPublisher.publishEvent(
                 new GroupPurchaseParticipatedEvent(groupPurchase, product)
         );
-
-        groupPurchaseCounterService.updateSuccessIfReached(groupPurchase, currentCount);
     }
 }

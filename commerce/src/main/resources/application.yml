@@ -19,7 +19,7 @@ spring:
     password: ${PRODUCT_DATABASE_PASSWORD}
     hikari:
       connection-init-sql: SET search_path TO product_schema, order_schema, public
-      maximum-pool-size: 80
+      maximum-pool-size: 30
       minimum-idle: 10
       connection-timeout: 3000
       idle-timeout: 600000
@@ -78,15 +78,3 @@ logging:
   level:
     org.apache.kafka: warn
     org.springframework.kafka: warn
-
-
-outbox:
-  publisher:
-    enabled: true
-    fixed-delay-ms: 1000
-    batch-size: 100
-    send-timeout-ms: 5000
-    processing-timeout-ms: 600000
-    retry-base-delay-ms: 2000
-    retry-max-delay-ms: 60000
-    max-retries: 10

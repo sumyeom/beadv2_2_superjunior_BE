@@ -32,7 +32,6 @@ public class GroupPurchaseService {
 
     private final GroupPurchaseRepository groupPurchaseRepository;
     private final ProductRepository productRepository;
-    private final GroupPurchaseCounterService groupPurchaseCounterService;
 
     private final ApplicationEventPublisher eventPublisher;
     private final MemberClient memberClient;
@@ -94,20 +93,16 @@ public class GroupPurchaseService {
         Product findProduct = productRepository.findById(findGroupPurchase.getProductId())
                 .orElseThrow(() -> new CustomException(CustomErrorCode.PRODUCT_NOT_FOUND));
 
-        int currentQuantity = groupPurchaseCounterService.getCurrent(findGroupPurchase);
-        return GroupPurchaseDetailInfo.from(findGroupPurchase, findProduct.getOriginalUrl(), findProduct.getPrice(), findProduct.getCategory(), currentQuantity);
+        return GroupPurchaseDetailInfo.from(findGroupPurchase, findProduct.getOriginalUrl(), findProduct.getPrice(), findProduct.getCategory());
     }
 
     public PageResponse<GroupPurchaseThumbnailInfo> getGroupPurchase(Pageable pageable) {
         Page<GroupPurchase> groupPurchasePage = groupPurchaseRepository.findAll(pageable);
 
-        Map<UUID, Integer> currentCounts = groupPurchaseCounterService.getCurrentCounts(groupPurchasePage.getContent());
-
         Page<GroupPurchaseThumbnailInfo> groupPurchaseInfoPage = groupPurchasePage.map(groupPurchase -> {
             Product product = productRepository.findById(groupPurchase.getProductId())
                     .orElseThrow(() -> new CustomException(CustomErrorCode.PRODUCT_NOT_FOUND));
-            int currentQuantity = currentCounts.getOrDefault(groupPurchase.getGroupPurchaseId(), groupPurchase.getCurrentQuantity());
-            return GroupPurchaseThumbnailInfo.from(groupPurchase, product.getPrice(), product.getCategory(), currentQuantity);
+            return GroupPurchaseThumbnailInfo.from(groupPurchase, product.getPrice(), product.getCategory());
         });
 
         return PageResponse.from(groupPurchaseInfoPage);
@@ -120,13 +115,10 @@ public class GroupPurchaseService {
     public PageResponse<GroupPurchaseThumbnailInfo> getGroupPurchasesBySeller(UUID sellerId, Pageable pageable) {
         Page<GroupPurchase> groupPurchasePage = groupPurchaseRepository.findAllBySellerId(sellerId, pageable);
 
-        Map<UUID, Integer> currentCounts = groupPurchaseCounterService.getCurrentCounts(groupPurchasePage.getContent());
-
         Page<GroupPurchaseThumbnailInfo> groupPurchaseInfoPage = groupPurchasePage.map(groupPurchase -> {
             Product product = productRepository.findById(groupPurchase.getProductId())
                     .orElseThrow(() -> new CustomException(CustomErrorCode.PRODUCT_NOT_FOUND));
-            int currentQuantity = currentCounts.getOrDefault(groupPurchase.getGroupPurchaseId(), groupPurchase.getCurrentQuantity());
-            return GroupPurchaseThumbnailInfo.from(groupPurchase, product.getPrice(), product.getCategory(), currentQuantity);
+            return GroupPurchaseThumbnailInfo.from(groupPurchase, product.getPrice(), product.getCategory());
         });
 
         return PageResponse.from(groupPurchaseInfoPage);

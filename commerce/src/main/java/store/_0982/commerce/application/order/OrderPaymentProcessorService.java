@@ -5,7 +5,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store._0982.commerce.application.grouppurchase.GroupPurchaseQuantityService;
-import store._0982.commerce.application.grouppurchase.ParticipateService;
 import store._0982.commerce.application.order.event.OrderCreateProcessedEvent;
 import store._0982.commerce.application.product.ProductService;
 import store._0982.commerce.application.settlement.OrderSettlementService;
@@ -33,7 +32,6 @@ public class OrderPaymentProcessorService {
     private final OrderSettlementService orderSettlementService;
     private final ProductService productService;
     private final GroupPurchaseQuantityService groupPurchaseQuantityService;
-    private final ParticipateService participateService;
 
     private final ApplicationEventPublisher eventPublisher;
 
@@ -59,7 +57,7 @@ public class OrderPaymentProcessorService {
             case PAYMENT_FAILED -> {
                 if(order.getStatus() != OrderStatus.PENDING) return;
                 order.markFailed();
-                participateService.rollback(
+                groupPurchaseQuantityService.decreaseQuantity(
                         groupPurchase.getGroupPurchaseId(),
                         order.getQuantity()
                 );

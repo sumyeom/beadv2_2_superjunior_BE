@@ -15,22 +15,22 @@ import java.util.UUID;
 public class GroupPurchaseQuantityService {
 
     private final GroupPurchaseRepository groupPurchaseRepository;
-    private final GroupPurchaseCounterService groupPurchaseCounterService;
 
     public GroupPurchase increaseQuantity(UUID groupPurchaseId, int quantity) {
-        GroupPurchase updated = groupPurchaseRepository.increaseQuantityReturning(groupPurchaseId, quantity);
+        int updated = groupPurchaseRepository.increaseQuantity(groupPurchaseId, quantity);
 
-        if(updated == null){
+        if(updated == 0){
             throw new CustomException(CustomErrorCode.GROUP_PURCHASE_IS_REACHED);
         }
 
-        return updated;
+        return groupPurchaseRepository.findById(groupPurchaseId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.GROUP_PURCHASE_NOT_FOUND));
     }
 
     @Transactional
     public void decreaseQuantity(UUID groupPurchaseId, int quantity) {
-        int currentCount = groupPurchaseCounterService.rollback(groupPurchaseId, quantity);
-        if(currentCount < 0){
+        int updated = groupPurchaseRepository.decreaseQuantity(groupPurchaseId, quantity);
+        if(updated == 0){
             throw new CustomException(CustomErrorCode.DECREASE_QUANTITY_FAILED);
         }
     }

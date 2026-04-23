@@ -27,10 +27,6 @@ public record GroupPurchaseDetailInfo(
         OffsetDateTime createdAt
 ) {
     public static GroupPurchaseDetailInfo from(GroupPurchase groupPurchase, String originalUrl, Long price, ProductCategory category) {
-        return from(groupPurchase, originalUrl, price, category, groupPurchase.getCurrentQuantity());
-    }
-
-    public static GroupPurchaseDetailInfo from(GroupPurchase groupPurchase, String originalUrl, Long price, ProductCategory category, int currentQuantity) {
         return new GroupPurchaseDetailInfo(
                 groupPurchase.getGroupPurchaseId(),
                 groupPurchase.getMinQuantity(),
@@ -39,7 +35,7 @@ public record GroupPurchaseDetailInfo(
                 groupPurchase.getDescription(),
                 price,
                 groupPurchase.getDiscountedPrice(),
-                currentQuantity,
+                groupPurchase.getCurrentQuantity(),
                 groupPurchase.getStartDate(),
                 groupPurchase.getEndDate(),
                 groupPurchase.getSellerId(),

@@ -36,14 +36,4 @@ public class GroupPurchaseRepositoryAdaptor implements GroupPurchaseRepository {
     public int bulkUpdateStatusWithSucceededAt(List<UUID> ids, GroupPurchaseStatus status) {
         return groupPurchaseJpaRepository.bulkUpdateStatusWithSucceededAt(ids, status, OffsetDateTime.now());
     }
-
-    @Override
-    public long countByStatusAndStartDateLessThanEqual(GroupPurchaseStatus status, OffsetDateTime now) {
-        return groupPurchaseJpaRepository.countByStatusAndStartDateLessThanEqual(status, now);
-    }
-
-    @Override
-    public long countByStatusAndEndDateLessThanEqual(GroupPurchaseStatus status, OffsetDateTime now) {
-        return groupPurchaseJpaRepository.countByStatusAndEndDateLessThanEqual(status, now);
-    }
 }

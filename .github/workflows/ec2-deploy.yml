@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/commerce-jsy-order-test-refact
+      - feature/commerce-service-jsy-old-version
   workflow_dispatch:
 
 jobs:
